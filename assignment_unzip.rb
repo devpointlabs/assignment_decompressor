@@ -1,3 +1,19 @@
+def unpack(file, folder)
+  `mv #{file} students/#{folder}`
+  `unzip students/#{folder}/#{file} -d students/#{folder}`
+  `rm students/#{folder}/#{file}`
+end
+
+def git_clone(file, folder)
+  url_line = File.open file do |x|
+    x.find { |line| line =~ /github.com/ }
+  end
+  usr_repo = url_line.split('github.com/').last.split("\"")[0]
+  clone_url = "git@github.com:#{usr_repo}.git"
+  `git clone #{clone_url} students/#{folder}/#{usr_repo.split("/").last}`
+  `rm #{file}`
+end
+
 if `ls`.split("\n").include?('submissions.zip')
   puts "Unzipping submissions.zip"
   `unzip submissions.zip`
@@ -7,20 +23,23 @@ if `ls`.split("\n").include?('submissions.zip')
   folders = `ls students`.split("\n")
   files.each do |file|
     a = file.split('-').include?('') ? file.split('-').reject! { |x| x == '' } : file.split('-')
-    last_name = a.shift
-    first_name = a[0].split('_')[0]
-    folder = "#{first_name}_#{last_name}"
+    folder = "#{a[0].split('_')[0]}_#{a.shift}"
+    extension = file.split('.').last.downcase
     if folders.include?(folder)
       puts "#{folder} exists"
-      `mv #{file} students/#{folder}`
-      `unzip students/#{folder}/#{file} -d students/#{folder}`
-      `rm students/#{folder}/#{file}`
+      if extension == 'zip'
+        unpack(file, folder)
+      elsif extension == 'html'
+        git_clone(file, folder)
+      end
     else
       puts "#{folder} does not yet exist. creating student folder."
       `mkdir students/#{folder}`
-      `mv #{file} students/#{folder}`
-      `unzip students/#{folder}/#{file} -d students/#{folder}`
-      `rm students/#{folder}/#{file}`
+      if extension == 'zip'
+        unpack(file, folder)
+      elsif extension == 'html'
+        git_clone(file, folder)
+      end
     end
   end
   `rm submissions.zip`
