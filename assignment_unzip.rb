@@ -23,7 +23,9 @@ if `ls`.split("\n").include?('submissions.zip')
   folders = `ls students`.split("\n")
   files.each do |file|
     a = file.split('-').include?('') ? file.split('-').reject! { |x| x == '' } : file.split('-')
-    folder = "#{a[0].split('_')[0]}_#{a.shift}"
+    last_name = a.shift
+    first_name = a[0].split('_')[0]
+    folder = "#{first_name}_#{last_name}"
     extension = file.split('.').last.downcase
     if folders.include?(folder)
       puts "#{folder} exists"
