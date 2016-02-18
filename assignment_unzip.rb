@@ -18,7 +18,7 @@ if `ls`.split("\n").include?('submissions.zip')
   puts "Unzipping submissions.zip"
   `unzip submissions.zip`
   puts "Unzipped"
-  files = `ls`.split("\n").reject! { |x| (x == 'assignment_unzip.rb') || (x == 'submissions.zip') || (x == 'students')}
+  files = `ls`.split("\n").reject! { |x| (x == 'assignment_unzip.rb') || (x == 'submissions.zip') || (x == 'students') || (x == 'README.md')}
   puts "#{files.count} student submissions found."
   folders = `ls students`.split("\n")
   files.each do |file|
