@@ -11,10 +11,16 @@ def git_clone(file, folder)
   usr_repo = url_line.split('github.com/').last.split("\"")[0]
   clone_url = "git@github.com:#{usr_repo}.git"
   response = `git clone #{clone_url} students/#{folder}/#{usr_repo.split("/").last} 2>&1`
-  if response.include?('already exists')
+  if response.include?('already exists') || `ls students/#{folder}`.split("\n").include?("#{clone_url.split('/')[1]}")
     puts "#{emoji('talk')} this submission has already been cloned."
   elsif response.include?('not a valid repository name')
     puts "#{emoji('talk')} user did not submit a base repository url."
+    puts "#{emoji('talk')} tried to clone from #{clone_url}"
+    puts "#{emoji('talk')} attempting to find base url and clone."
+    new_clone = clone_url.split('/')[0..1].join('/') + '.git'
+    puts "#{emoji('talk')} new url: #{new_clone}"
+    response2 = `git clone #{new_clone} students/#{folder}/#{clone_url.split('/')[1]} 2>&1`
+    puts response2
   else
     puts "#{emoji('good')} submisison successfully cloned"
   end
